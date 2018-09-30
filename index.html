@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <title>Auto Load More Data on Page Scroll with Jquery & PHP</title>
+  </head>
+  <body>
+    <h1 class="jumbotron text-center">Auto Load More Data on Page Scroll with Jquery & PHP</h1>
+    <div class="container">
+      <div id="load_data"></div>
+      <div id="load_data_message"></div>
+    </div>
+    <br><Br>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function()
+      {
+       var limit = 10;
+       var start = 0;
+       var action = 'inactive';
+       function load_country_data(limit, start)
+       {
+        $.ajax({
+         url:"fetch.php",
+         method:"POST",
+         data:{limit:limit,start:start},
+         cache:false,
+         success:function(data)
+         {
+          $('#load_data').append(data);
+          if(data == '')
+          {
+           $('#load_data_message').html("<p class='text-center'>No More Data Found | End of List</p>");
+           action = 'active';
+          }
+          else
+          {
+           $('#load_data_message').html("<p class='text-center'>Please Wait....</p>");
+           action = "inactive";
+          }
+         }
+        });
+       }
+
+       if(action == 'inactive')
+       {
+        action = 'active';
+        load_country_data(limit, start);
+       }
+       $(window).scroll(function(){
+        if($(window).scrollTop() + $(window).height() > $("#load_data").height() && action == 'inactive')
+        {
+         action = 'active';
+         start = start + limit;
+         setTimeout(function(){
+          load_country_data(limit, start);
+         },1000);
+        }
+       });
+       
+      });
+    </script>
+  </body>
+</html>
